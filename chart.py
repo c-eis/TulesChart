@@ -4,11 +4,13 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 import network
  
 def gui_save_network():
+    '''saves a network in a file (callback function of save_button)'''
     global network
     fname = asksaveasfilename() 
     network = network.save(fname)
    
 def gui_draw_network():
+    '''draws a network using networkx and matplotlib (callback function of draw_button)'''
     global network
     network.draw_network()
     info_label.config(text=network.name)
@@ -28,6 +30,7 @@ def gui_draw_network():
     #new_chart_label.pack()
     
 def gui_load_network():
+    '''loads a network from a file (callback function of load_button)'''
     global network
     fname = askopenfilename() 
     network = load_network(fname)
@@ -35,7 +38,9 @@ def gui_load_network():
     
     
 def gui_new_network():
+    '''creates a window to create a new empty network (callback function of new_network_button)'''
     def gui_new_network_create():
+        '''creates a new empty network (callback function b_create)'''
         name = e_name.get()
         global network
         network = Network(name)
@@ -52,7 +57,9 @@ def gui_new_network():
     b_create.pack()
 
 def gui_new_member():
+    '''creates a window to create a new network member (callback function of new_member_button)'''
     def gui_new_member_create():
+        '''creates a new network member (callback function of b_create)'''
         member = e_name.get()
         global network
         network.add_member(member)
@@ -68,14 +75,22 @@ def gui_new_member():
     b_create.pack()
     
 def gui_new_connection():
+    '''creates a window to create a new connection in the network (callback function of new_connection_button)'''
     def gui_new_connection_create():
+        '''creates a new connection (callback function of b_create)'''
         #member1 = listbox1.curselection()
-        items1 = listbox1.curselection()
-        try:
-            items1 = map(int, items1)
-        except ValueError: pass
-        items1 = map(lambda i,d=self.data: d[i], items1)
+        member1 = get(listbox1.curselection())
+        #try:
+        #    member1 = map(int, member1)
+        #except ValueError: pass
+        #member1 = map(lambda i,d=listbox1.data: d[i], member1)
+
+        #member2 = listbox2.curselection()
         member2 = listbox2.curselection()
+        try:
+            member2 = map(int, member2)
+        except ValueError: pass
+        items2 = map(lambda i,d=self.data: d[i], items1)
         global network
         network.add_connection([member1,member2])
         new_connection_window.destroy()
@@ -113,6 +128,7 @@ def gui_new_connection():
     
 
 def gui_combine_networks():
+    '''loads another network and combines it with the actuall network (callback function of combine_networks_button)'''
     global network
     fname = askopenfilename() 
     network2 = load_network(fname)

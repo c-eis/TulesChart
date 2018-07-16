@@ -243,6 +243,7 @@ class Network(object):
 
 
     def draw_network(self):
+        ''' draws the network using networks and matplotlib'''
         fig = plt.figure(figsize=(12,12))
         ax = fig.add_subplot(111)
         #ax.patch.set_facecolor('black')
@@ -255,10 +256,12 @@ class Network(object):
         show()
 
 def load_network(fname):
+    '''loads network saved in given filename'''
     with open(fname, 'rb') as f:
         return pickle.load(f)
 
 def create_HGW_network():
+    '''creates test network'''
     g = { "Jule" : ["Tine"],
           "Malle" : ["Sarah", "Lisa", "Trace", "Hanna", "Tine"],
           "Caro" : ["Denise", "Maria", "Julia", "Katja"],
