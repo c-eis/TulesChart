@@ -1,7 +1,9 @@
 import pickle
 from networkx import draw, Graph, draw_networkx, MultiGraph
+from networkx.drawing.nx_pydot import graphviz_layout
 from pylab import show
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class Network(object):
 
@@ -242,13 +244,13 @@ class Network(object):
 
     def draw_network(self):
         fig = plt.figure(figsize=(12,12))
-        ax = plt.subplot(111)
-        ax.set_title('Graph - Shapes', fontsize=10)
-        g = MultiGraph()
-        #g.add_edges_from([(1,2),(1,3),(2,4),(2,5)])
+        ax = fig.add_subplot(111)
+        #ax.patch.set_facecolor('black')
+        g = Graph()
         g.add_edges_from(self.__generate_connections())
-        draw(g, with_labels=True, node_size=600, node_color='#77D5D5', font_size=10)
-        plt.tight_layout()
+        draw_networkx(g, pos=graphviz_layout(g), with_labels=True, node_size=1000, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white')        
+        ax.patch.set_facecolor('black')
+        #plt.tight_layout()
         plt.savefig("chart.png", format='PNG')
         show()
 
