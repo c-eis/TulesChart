@@ -1,8 +1,8 @@
 import pickle
 from networkx import draw, Graph, draw_networkx, MultiGraph
-#from networkx.drawing.nx_pydot import graphviz_layout
 from pylab import show
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class Network(object):
 
@@ -281,7 +281,7 @@ class Network(object):
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
 
-    def draw_network(self):
+    def draw_network(self)
         ''' draws the network using networks and matplotlib'''
         fig = plt.figure(figsize=(18,10))
         ax = fig.add_subplot(111)
