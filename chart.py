@@ -1,8 +1,8 @@
 from tkinter import *
 from PIL import Image, ImageTk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-import network
- 
+from network import *
+
 def gui_save_network():
     '''saves a network in a file (callback function of save_button)'''
     global network
@@ -35,7 +35,28 @@ def gui_load_network():
     fname = askopenfilename() 
     network = load_network(fname)
     info_label.config(text=network.name)
-    
+    gui_draw_network()
+
+def gui_load_new():
+    '''loads a new network from a textfile (callback function of load_new_button'''
+    def gui_load_new_create():
+        fname = askopenfilename()
+        name = e_name.get()
+        global network
+        network = load_from_txt(fname, name)
+        info_label.config(text=network.name)
+        load_new_window.destroy()
+        gui_draw_network()
+        
+    load_new_window = Toplevel()
+    load_new_window.title('Neues Netzwerk')
+    load_new_window.geometry('160x160')
+    l_name = Label(load_new_window, text='Name des neuen Netzwerks')
+    e_name = Entry(load_new_window)
+    b_create = Button(load_new_window, text='Erstellen', command=gui_load_new_create)
+    l_name.pack()
+    e_name.pack()
+    b_create.pack()    
     
 def gui_new_network():
     '''creates a window to create a new empty network (callback function of new_network_button)'''
@@ -46,6 +67,7 @@ def gui_new_network():
         network = Network(name)
         info_label.config(text=network.name)
         new_network_window.destroy()
+        gui_draw_network()
     new_network_window = Toplevel()
     new_network_window.title('Neues Netzwerk')
     new_network_window.geometry('160x160')
@@ -64,6 +86,7 @@ def gui_new_member():
         global network
         network.add_member(member)
         new_member_window.destroy()
+        gui_draw_network()
     new_member_window = Toplevel()
     new_member_window.title('Neue Person')
     new_member_window.geometry('160x160')
@@ -78,22 +101,12 @@ def gui_new_connection():
     '''creates a window to create a new connection in the network (callback function of new_connection_button)'''
     def gui_new_connection_create():
         '''creates a new connection (callback function of b_create)'''
-        #member1 = listbox1.curselection()
-        member1 = get(listbox1.curselection())
-        #try:
-        #    member1 = map(int, member1)
-        #except ValueError: pass
-        #member1 = map(lambda i,d=listbox1.data: d[i], member1)
-
-        #member2 = listbox2.curselection()
-        member2 = listbox2.curselection()
-        try:
-            member2 = map(int, member2)
-        except ValueError: pass
-        items2 = map(lambda i,d=self.data: d[i], items1)
+        member1 = listbox1.get(ACTIVE)
+        member2 = listbox2.get(ACTIVE)
         global network
         network.add_connection([member1,member2])
         new_connection_window.destroy()
+        gui_draw_network()
         
     new_connection_window = Toplevel()
     new_connection_window.title('Neue Verbindung')
@@ -107,10 +120,10 @@ def gui_new_connection():
     s2 = Scrollbar(new_connection_window)
 
     listbox1 = Listbox(new_connection_window)
-    for item in network.members():
+    for item in sorted(network.members()):
         listbox1.insert(END, item)
     listbox2 = Listbox(new_connection_window)
-    for item in network.members():
+    for item in sorted(network.members()):
         listbox2.insert(END, item)
         
     l_name1.pack(side=LEFT)
@@ -135,17 +148,125 @@ def gui_combine_networks():
     for i in network2.connections():
         network.add_connection(i)
     info_label.config(text=network.name)
+    gui_draw_network()
 
+    
+def gui_delete_connection():
+    '''creates a window to delete a connection in the network (callback function of delete_connection_button)'''
+    def gui_delete_connection_ok():
+        '''deletes a connection (callback function of b_delete)'''
+        member1 = listbox1.get(ACTIVE)
+        member2 = listbox2.get(ACTIVE)
+        global network
+        network.delete_connection([member1,member2])
+        delete_connection_window.destroy()
+        gui_draw_network()
+        
+    delete_connection_window = Toplevel()
+    delete_connection_window.title('Lösche Verbindung')
+    delete_connection_window.geometry('600x300')
+    
+    l_name1 = Label(delete_connection_window, text='Person 1')
+    l_name2 = Label(delete_connection_window, text='Person 2')
+    
+    b_delete = Button(delete_connection_window, text='Löschen', command=gui_delete_connection_ok)
+    s1 = Scrollbar(delete_connection_window)
+    s2 = Scrollbar(delete_connection_window)
+
+    listbox1 = Listbox(delete_connection_window)
+    for item in sorted(network.members()):
+        listbox1.insert(END, item)
+    listbox2 = Listbox(delete_connection_window)
+    for item in sorted(network.members()):
+        listbox2.insert(END, item)
+        
+    l_name1.pack(side=LEFT)
+    listbox1.pack(side=LEFT)    
+    s1.pack(side=LEFT)
+    l_name2.pack(side=LEFT)
+    listbox2.pack(side=LEFT)
+    s2.pack(side=LEFT)
+    b_delete.pack(side=LEFT)
+    
+    s1['command'] = listbox1.yview
+    listbox1['yscrollcommand'] = s1.set
+    s2['command'] = listbox2.yview
+    listbox2['yscrollcommand'] = s2.set
+    
+
+def gui_delete_member():
+    '''creates a window to delete a memer of the network (callback function of delete_connection_button)'''
+    def gui_delete_member_ok():
+        '''deletes a connection (callback function of b_delete)'''
+        member = listbox.get(ACTIVE)
+        global network
+        network.delete_member(member)
+        delete_member_window.destroy()
+        gui_draw_network()
+        
+    delete_member_window = Toplevel()
+    delete_member_window.title('Lösche Person')
+    delete_member_window.geometry('600x300')
+    
+    l_name = Label(delete_member_window, text='Name')
+    
+    b_delete = Button(delete_member_window, text='Löschen', command=gui_delete_member_ok)
+    s = Scrollbar(delete_member_window)
+
+    listbox = Listbox(delete_member_window)
+    for item in sorted(network.members()):
+        listbox.insert(END, item)
+    
+    l_name.pack(side=LEFT)
+    listbox.pack(side=LEFT)    
+    s.pack(side=LEFT)
+    b_delete.pack(side=LEFT)
+    
+    s['command'] = listbox.yview
+    listbox['yscrollcommand'] = s.set
+    
+def gui_rename():
+    '''creates a window to rename a memer of the network (callback function of rename_button)'''
+    def gui_rename_ok():
+        '''renames a member (callback function of b_rename)'''
+        member = listbox.get(ACTIVE)
+        new_member = e_name.get()
+        global network
+        network.rename_member(member, new_member)
+        rename_window.destroy()
+        gui_draw_network()
+        
+    rename_window = Toplevel()
+    rename_window.title('Bennene Person um')
+    rename_window.geometry('600x300')
+    
+    l_name1 = Label(rename_window, text='Alter Name')
+    l_name2 = Label(rename_window, text='Neuer Name')
+    e_name = Entry(rename_window)
+    b_rename = Button(rename_window, text='Umbenennen', command=gui_rename_ok)
+    s = Scrollbar(rename_window)
+
+    listbox = Listbox(rename_window)
+    for item in sorted(network.members()):
+        listbox.insert(END, item)
+    
+    l_name1.pack(side=LEFT)
+    listbox.pack(side=LEFT)    
+    s.pack(side=LEFT)
+    l_name2.pack(side=LEFT)
+    e_name.pack(side=LEFT)
+    b_rename.pack(side=LEFT)
+    
+    s['command'] = listbox.yview
+    listbox['yscrollcommand'] = s.set
+    
 global network
 network = Network('Leer',{})
 #network.draw_network()
 
 #network = create_HGW_network()
 #network.draw_network()
-#print("New network")
-#network.save()
-#new_network = load_network('HGW')
-#print(new_network)
+
 
 # Create Window
 window = Tk()
@@ -172,7 +293,6 @@ new_width  = int(new_height * w / h)
 image = image.resize((new_width, new_height), Image.ANTIALIAS)
 chart_image = ImageTk.PhotoImage(image)
 
-#chart_canvas = Canvas(window, width=400, height=400)
 chart_label = Label(master=window, image=initial_image)
 chart_label.place(x=110, y=160, width=new_width, height=img_h)
 
@@ -181,30 +301,35 @@ chart_label.place(x=110, y=160, width=new_width, height=img_h)
 exit_button = Button(window, text='Beenden', command=window.quit)
 info_label = Label(window, text=network.name)
 load_button = Button(window, text='Chart Laden', command=gui_load_network)
+load_new_button = Button(window, text='Erstelle neues Netwerk aus Datei', command=gui_load_new)
 save_button = Button(window, text='Chart Speichern', command=gui_save_network)
 draw_button = Button(window, text='Zeichnen', command=gui_draw_network)
 new_network_button = Button(window, text='Erstelle neues Netzwerk', command=gui_new_network)
 new_member_button = Button(window, text='Fuege neue Person hinzu', command=gui_new_member)
 new_connection_button = Button(window, text='Fuege neue Verbindung hinzu', command=gui_new_connection)
 combine_networks_button = Button(window, text='Verbinde Netzwerke', command=gui_combine_networks)
+delete_connection_button = Button(window, text='Lösche Verbindung', command=gui_delete_connection)
+delete_member_button = Button(window, text='Lösche Person', command=gui_delete_member)
+rename_button = Button(window, text='Person umbenennen', command=gui_rename)
 
 # Load Buttons in Window
-#chart_canvas.pack()
 chart_label.pack()
 info_label.pack()
 load_button.pack(side=LEFT)
+load_new_button.pack(side=LEFT)
 new_network_button.pack(side=LEFT)
 save_button.pack(side=LEFT)
 draw_button.pack(side=LEFT)
 new_member_button.pack(side=LEFT)
 new_connection_button.pack(side=LEFT)
+rename_button.pack(side=LEFT)
 combine_networks_button.pack(side=LEFT)
+delete_connection_button.pack(side=LEFT)
+delete_member_button.pack(side=LEFT)
 exit_button.pack(side=LEFT) 
 
-#chart_canvas.create_image((100,250),image=initial_image)
 
 # Wait for user command
 window.mainloop()
-
 
     

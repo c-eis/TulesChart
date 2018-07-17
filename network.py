@@ -1,6 +1,6 @@
 import pickle
 from networkx import draw, Graph, draw_networkx, MultiGraph
-from networkx.drawing.nx_pydot import graphviz_layout
+#from networkx.drawing.nx_pydot import graphviz_layout
 from pylab import show
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -56,8 +56,44 @@ class Network(object):
             self.__network_dict[member2].append(member1)
         else:
             self.__network_dict[member2] = [member1]
-            
+     
+    def delete_connection(self,connection):
+        """ assumes that connection is of type set, tuple or list;  
+        """ 
+        connection = set(connection)
+        (member1, member2) = tuple(connection)
+        if member1 in self.__network_dict:
+            if member2 in self.__network_dict[member1]:
+                self.__network_dict[member1].remove(member2)
+        else:
+            print('Verbindung existiert nicht')
+        if member2 in self.__network_dict:
+            if member1 in self.__network_dict[member2]:
+                self.__network_dict[member2].remove(member1)
+        else:
+            print('Verbindung existiert nicht')
 
+    def delete_member(self, member):
+        if member in self.__network_dict:
+            partner = self.__network_dict[member]
+            del self.__network_dict[member]
+        for i in partner:
+            if member in self.__network_dict[i]:
+                self.__network_dict[i].remove(member)
+
+    def rename_member(self, member, new_member):
+        if new_member in self.__network_dict:
+            print('Person existiert bereits!')
+        if member in self.__network_dict:
+            partner = self.__network_dict[member]
+            del self.__network_dict[member]
+            self.__network_dict[new_member] = partner
+        for i in partner:
+            if member in self.__network_dict[i]:
+                self.__network_dict[i].remove(member)
+                self.__network_dict[i].append(new_member)
+                
+                
     def __generate_connections(self):
         """ A static method generating the connections of the 
             network "network". Connections are represented as sets 
@@ -249,16 +285,38 @@ class Network(object):
         #ax.patch.set_facecolor('black')
         g = Graph()
         g.add_edges_from(self.__generate_connections())
-        draw_networkx(g, pos=graphviz_layout(g), with_labels=True, node_size=1000, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white')        
+        #draw_networkx(g, pos=graphviz_layout(g), with_labels=True, node_size=1000, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white')        
+        draw_networkx(g, with_labels=True, node_size=1000, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white')        
         ax.patch.set_facecolor('black')
         #plt.tight_layout()
         plt.savefig("chart.png", format='PNG')
         show()
 
+        
 def load_network(fname):
     '''loads network saved in given filename'''
     with open(fname, 'rb') as f:
         return pickle.load(f)
+        
+def load_from_txt(fname, name):
+    network = Network(name)
+    with open(fname, 'rb') as f:
+        for line in f:
+            line = str(line)
+            line = line.strip('b')
+            line = line.strip("'")
+            line = line.strip('\\n')
+            line = line.strip('\\r')
+            line = line.strip('\n')
+            line = line.strip('\r')
+            member = line.split(':')[0]
+            network.add_member(member)
+            for partner in str(line).split(':')[1].split(','):
+                network.add_connection([member,partner])
+                
+    print(network)
+    return network
+        
 
 def create_HGW_network():
     '''creates test network'''

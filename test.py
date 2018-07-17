@@ -1,4 +1,5 @@
 from network import *
 
-network=create_HGW_network()
+network = load_from_txt('HGW.txt', 'hgw')
+#network=create_HGW_network()
 network.draw_network()
