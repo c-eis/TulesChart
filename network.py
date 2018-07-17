@@ -3,9 +3,9 @@ from networkx import draw, Graph, draw_networkx, MultiGraph
 #from networkx.drawing.nx_pydot import graphviz_layout
 from pylab import show
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 class Network(object):
+
 
     def __init__(self, name, network_dict={}):
         """ initializes a network object """
@@ -56,7 +56,8 @@ class Network(object):
             self.__network_dict[member2].append(member1)
         else:
             self.__network_dict[member2] = [member1]
-     
+
+            
     def delete_connection(self,connection):
         """ assumes that connection is of type set, tuple or list;  
         """ 
@@ -73,6 +74,7 @@ class Network(object):
         else:
             print('Verbindung existiert nicht')
 
+            
     def delete_member(self, member):
         if member in self.__network_dict:
             partner = self.__network_dict[member]
@@ -81,6 +83,7 @@ class Network(object):
             if member in self.__network_dict[i]:
                 self.__network_dict[i].remove(member)
 
+                
     def rename_member(self, member, new_member):
         if new_member in self.__network_dict:
             print('Person existiert bereits!')
@@ -280,23 +283,31 @@ class Network(object):
 
     def draw_network(self):
         ''' draws the network using networks and matplotlib'''
-        fig = plt.figure(figsize=(12,12))
+        fig = plt.figure(figsize=(18,10))
         ax = fig.add_subplot(111)
         #ax.patch.set_facecolor('black')
         g = Graph()
         g.add_edges_from(self.__generate_connections())
         #draw_networkx(g, pos=graphviz_layout(g), with_labels=True, node_size=1000, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white')        
-        draw_networkx(g, with_labels=True, node_size=1000, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white')        
+        draw_networkx(g, with_labels=True, node_size=1500, node_color='black', font_size=16, linewidths=0, font_family='monospace', edge_color='white', font_color='white', node_shape='s')        
         ax.patch.set_facecolor('black')
-        #plt.tight_layout()
+        ax.axes.get_xaxis().set_visible(False)
+        ax.axes.get_yaxis().set_visible(False)
+        plt.tight_layout()
         plt.savefig("chart.png", format='PNG')
-        show()
-
+        
+        
+    def show_network(self):
+        ''' draws the network using networks and matplotlib and shows it'''
+        self.draw_network()
+        show()        
+        
         
 def load_network(fname):
     '''loads network saved in given filename'''
     with open(fname, 'rb') as f:
         return pickle.load(f)
+        
         
 def load_from_txt(fname, name):
     network = Network(name)
