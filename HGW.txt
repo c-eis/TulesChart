@@ -1,3 +1,0 @@
-Tine:Jule,Malle,Lisa
-Malle:Trace,Lisa,Hanna,Sarah
-Lisa:Malle,Julia Maria,Henny,Hanna Richter
