@@ -318,19 +318,3 @@ def load_from_txt(fname, name):
     return network
         
 
-def create_HGW_network():
-    '''creates test network'''
-    g = { "Jule" : ["Tine"],
-          "Malle" : ["Sarah", "Lisa", "Trace", "Hanna", "Tine"],
-          "Caro" : ["Denise", "Maria", "Julia", "Katja"],
-          "Denise" : ["Caro", "Lenny"],
-          "Sarah": ["Malle", "Trace"],
-          "Lisa" : ["Denise", "Malle", "Tine", "Hanna2", "Henny", "Julia2"]
-        }
-    network = Network('HGW', g)
-    #print("Members of network:")
-    #print(network.members())
-
-    #print("Connections of network:")
-    #print(network.connections())
-    return network
