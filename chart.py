@@ -148,10 +148,11 @@ def gui_new_connection():
     s1 = Scrollbar(new_connection_window)
     s2 = Scrollbar(new_connection_window)
 
-    listbox1 = Listbox(new_connection_window)
+    listbox1 = Listbox(new_connection_window, exportselection=False)
+
     for item in sorted(network.members()):
         listbox1.insert(END, item)
-    listbox2 = Listbox(new_connection_window)
+    listbox2 = Listbox(new_connection_window, exportselection=False)
     for item in sorted(network.members()):
         listbox2.insert(END, item)
         
@@ -205,10 +206,10 @@ def gui_delete_connection():
     s1 = Scrollbar(delete_connection_window)
     s2 = Scrollbar(delete_connection_window)
 
-    listbox1 = Listbox(delete_connection_window)
+    listbox1 = Listbox(delete_connection_window, exportselection=False)
     for item in sorted(network.members()):
         listbox1.insert(END, item)
-    listbox2 = Listbox(delete_connection_window)
+    listbox2 = Listbox(delete_connection_window, exportselection=False)
     for item in sorted(network.members()):
         listbox2.insert(END, item)
         
@@ -248,7 +249,7 @@ def gui_delete_member():
     b_delete = Button(delete_member_window, text='Löschen', command=gui_delete_member_ok)
     s = Scrollbar(delete_member_window)
 
-    listbox = Listbox(delete_member_window)
+    listbox = Listbox(delete_member_window, exportselection=False)
     for item in sorted(network.members()):
         listbox.insert(END, item)
     
@@ -285,7 +286,7 @@ def gui_rename():
     b_rename = Button(rename_window, text='Umbenennen', command=gui_rename_ok)
     s = Scrollbar(rename_window)
 
-    listbox = Listbox(rename_window)
+    listbox = Listbox(rename_window, exportselection=False)
     for item in sorted(network.members()):
         listbox.insert(END, item)
     
